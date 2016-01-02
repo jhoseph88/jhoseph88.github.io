@@ -10,11 +10,11 @@
       if (canvas.getContext){
        var prob_life = window.prompt("Enter the initial probability of a live cell to generate seed (enter a decimal number, as in 0.2 or .2):");
         var ctx = canvas.getContext('2d');
-        ctx.strokeStyle = 'rgba(200,200,200,.5)';  
+        ctx.strokeStyle = 'rgb(200,200,200)';  
         ctx.fillStyle = 'rgba(200,200,200,.5)';   
         ctx.lineWidth = 1;
         ctx.beginPath();
-        //create grid
+        //draw grid
         for (var i = 25; i < 550; i += 25) {
           ctx.moveTo(0, i);
           ctx.lineTo(550, i);
@@ -27,8 +27,11 @@
         seed(prob_life, 22, ctx);
       }
     }//draw
+    //draw/build the initial conditions ("seed") depending on the user's
+    //input of the probability of cell life
     function seed(prob_life, dims, ctx) {
-      var uni = new Array(dims);//2d array universe
+      //2d array universe of cells (true means alive, false means dead)
+      var uni = new Array(dims);
       for (var i = 0; i < dims; ++i) {
         uni[i] = new Array(dims);
       }
@@ -46,6 +49,10 @@
       setInterval(life, 500, ctx, uni);
     }//seed
     function life(ctx, universe) {
+      //to_change will be a 2d array with the first dimension as the
+      //x coordinate of the cell, the second dimension as the y coordinate,
+      //and the key will be true if the cell is to die after the round and
+      //false if the cell is dead and will come alive after the round.
       var to_change = new Array(universe.length);
       for (var i = 0; i < universe.length; ++i) {
         to_change[i] = new Array(universe.length);
@@ -93,23 +100,23 @@
           //or by overpopulation if more than three neighbors
           if ( (universe[i][j] == true) && 
                (neighbor_count < 2 || neighbor_count > 3) ) {
-            //universe[i][j] = false;
             to_change[i][j] = true;
-            //ctx.clearRect(i * 25+ 2, j * 25 + 2, 22, 22);
-          }
+          }//comes alive if exactly three neighbors (reproduction)
           else if (universe[i][j] == false && neighbor_count == 3) {
-            //universe[i][j] = true;
-            //ctx.fillRect(i * 25, j * 25, 25, 25);
             to_change[i][j] = false;
           }
         }
       }
       for (var i = 0; i < to_change.length; ++i) {
         for (var j = 0; j < to_change.length; ++j) {
+          //if deemed dead after the round, change the cell to false in
+          //universe (signifying cell death) and clear it from the grid
           if (to_change[i][j] == true) {
             universe[i][j] = false;
             ctx.clearRect(i * 25+ 2, j * 25 + 2, 22, 22);
-          }
+          }//if the cell is to come alive after the round, set the cell to
+          //true in the universe (signifying cell birth) and color it in in
+          //the grid
           else if (to_change[i][j] == false) {
             universe[i][j] = true;
             ctx.fillRect(i * 25, j * 25, 25, 25);
