@@ -1,30 +1,129 @@
 <!DOCTYPE html>
 <html>
-	<head>
-		<meta charset="utf-8">
-		<link href="styles/style.css" rel="stylesheet" type="text/css">
-		<link href='https://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css'>
-		<title>My test page</title>
-	</head>
-	<body>
-		<h1>Mozilla is cool</h1>
-		<img src="images/sunset.png" alt="sunset">
-		<p>At Mozilla, we're a global community of</p>
-		<ul>
-			<li>technologists</li>
-			<li>thinkers</li>
-			<li>builders</li>
-		</ul>
-		<p>working together to keep the Internet alive and accessible,
-		   so people worldwide can be informed contributors and creators
-		   of the Web. We believe this act of human collaboration across
-		   an open platform is essential to individual growth and our
-		   collective future.
-		</p>
-		<p>Read the <a href="https://www.mozilla.org/en-US/about/manifesto/">Mozilla Manifesto</a> to learn even more about the values
-		   and principles that guide the pursuit of our mission.
-		</p> 
-		<button>Change user</button>  
-		<script src="scripts/main.js"></script>
-	</body>	
+
+<head>
+  <meta charset= "utf-8">
+  <title>Canvas tutorial</title>
+  <script type="application/javascript">
+    function draw() {
+      var canvas = document.getElementById('canvas');
+      if (canvas.getContext){
+       var prob_life = window.prompt("Enter the initial probability of a live cell to generate seed");
+        var ctx = canvas.getContext('2d');
+        ctx.strokeStyle = 'rgba(200,200,200,.5)';  
+        ctx.fillStyle = 'rgba(200,200,200,.5)';   
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        //create grid
+        for (var i = 25; i < 550; i += 25) {
+          ctx.moveTo(0, i);
+          ctx.lineTo(550, i);
+          ctx.stroke();
+
+          ctx.moveTo(i, 0);
+          ctx.lineTo(i, 550);
+          ctx.stroke();
+        }
+        seed(prob_life, 22, ctx);
+      }
+    }//draw
+    function seed(prob_life, dims, ctx) {
+      var uni = new Array(dims);//2d array universe
+      for (var i = 0; i < dims; ++i) {
+        uni[i] = new Array(dims);
+      }
+      for (var i = 0; i < dims; ++i) {
+        for (var j = 0; j < dims; ++j) {
+          if (Math.random() < prob_life) {
+            uni[i][j] = true;
+            ctx.fillRect(i * 25, j * 25, 25, 25)
+          }
+          else {
+            uni[i][j] = false;
+          }
+        }
+      }
+      setInterval(life, 500, ctx, uni);
+    }//seed
+    function life(ctx, universe) {
+      var to_change = new Array(universe.length);
+      for (var i = 0; i < universe.length; ++i) {
+        to_change[i] = new Array(universe.length);
+      }
+      for (var i = 0; i < universe.length; ++i) {
+        for (var j = 0; j < universe.length; ++j) {
+          var neighbor_count = 0;
+          if (i - 1 >= 0)  {
+            //northwest neighbor?
+            if (j - 1 >= 0 && (universe[i - 1][j - 1] == true) ) {
+                neighbor_count++;
+            }//west neighbor?
+            if (universe[i - 1][j] == true) {
+              neighbor_count++;
+            }
+          }
+          if (j - 1 >= 0) {
+            //northeast neighbor?
+            if (i + 1 < universe.length && (universe[i + 1][j - 1] == true) ) {
+              neighbor_count++;
+            }//north neighbor?
+            if (universe[i][j - 1] == true) {
+              neighbor_count++;
+            }
+          }
+          if (i + 1 < universe.length) {
+            //southeast neighbor?
+            if (j + 1 < universe.length && (universe[i + 1][j + 1] == true) ) {
+              ++neighbor_count;
+            }//east neighbor?
+            if (universe[i + 1][j] == true) {
+              ++neighbor_count;
+            }
+          }
+          if (j + 1 < universe.length) {
+            //southwest neighbor?
+            if (i - 1 >= 0 && (universe[i - 1][j + 1] == true) ) {
+              ++neighbor_count;
+            }//south neighbor?
+            if (universe[i][j + 1] == true) {
+              ++neighbor_count;
+            }
+          }
+          //dies by underpopulation if less than two neighbors
+          //or by overpopulation if more than three neighbors
+          if ( (universe[i][j] == true) && 
+               (neighbor_count < 2 || neighbor_count > 3) ) {
+            //universe[i][j] = false;
+            to_change[i][j] = true;
+            //ctx.clearRect(i * 25+ 2, j * 25 + 2, 22, 22);
+          }
+          else if (universe[i][j] == false && neighbor_count == 3) {
+            //universe[i][j] = true;
+            //ctx.fillRect(i * 25, j * 25, 25, 25);
+            to_change[i][j] = false;
+          }
+        }
+      }
+      for (var i = 0; i < to_change.length; ++i) {
+        for (var j = 0; j < to_change.length; ++j) {
+          if (to_change[i][j] == true) {
+            universe[i][j] = false;
+            ctx.clearRect(i * 25+ 2, j * 25 + 2, 22, 22);
+          }
+          else if (to_change[i][j] == false) {
+            universe[i][j] = true;
+            ctx.fillRect(i * 25, j * 25, 25, 25);
+          }
+        }
+      }
+    }
+  </script>
+  <style type="text/css">
+    canvas { border: 1px solid black; }
+  </style>
+</head>
+
+<body onload="draw();">
+  <canvas id="canvas" width="550" height="550"></canvas>
+</body>
 </html>
