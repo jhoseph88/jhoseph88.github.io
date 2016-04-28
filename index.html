@@ -15,7 +15,7 @@
         ctx.lineWidth = 1;
         ctx.beginPath();
         //draw grid
-        for (var i = 25; i < 550; i += 25) {
+        for (var i = 25.5; i < 550; i += 25) {
           ctx.moveTo(0, i);
           ctx.lineTo(550, i);
           ctx.stroke();
@@ -39,7 +39,7 @@
         for (var j = 0; j < dims; ++j) {
           if (Math.random() < prob_life) {
             uni[i][j] = true;
-            ctx.fillRect(i * 25, j * 25, 25, 25)
+            ctx.fillRect(i * 25 + .5, j * 25 + .5, 25, 25)
           }
           else {
             uni[i][j] = false;
@@ -113,13 +113,13 @@
           //universe (signifying cell death) and clear it from the grid
           if (to_change[i][j] == true) {
             universe[i][j] = false;
-            ctx.clearRect(i * 25+ 2, j * 25 + 2, 22, 22);
+            ctx.clearRect(i * 25+ .5, j * 25 + .5, 24, 24);
           }//if the cell is to come alive after the round, set the cell to
           //true in the universe (signifying cell birth) and color it in in
           //the grid
           else if (to_change[i][j] == false) {
             universe[i][j] = true;
-            ctx.fillRect(i * 25, j * 25, 25, 25);
+            ctx.fillRect(i * 25 + .5, j * 25 + .5, 25.5, 25.5);
           }
         }
       }
