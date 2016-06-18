@@ -1,4 +1,3 @@
-    //<script src="/Users/CCB/desktop/eecs/workspace/brainstorm_js/scripts/bundle.js"></script>
 var imported = document.createElement('script');
 imported.src = 'bundle.js';
 document.head.appendChild(imported);
