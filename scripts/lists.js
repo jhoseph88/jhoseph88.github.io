@@ -1,5 +1,5 @@
 var imported = document.createElement('script');
-imported.src = 'bundle.js';
+imported.src = 'scripts/bundle.js';
 document.head.appendChild(imported);
 
   //Script for list generation/manipulation-
