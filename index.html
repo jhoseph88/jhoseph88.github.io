@@ -1,66 +1,89 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>BrainstormApp</title>
-
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-
-  <script src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.0/jquery.min.js">
-  </script>
-
-  <script type="text/javascript" src="scripts/lists.js"></script>
-
-  <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/\
-css/bootstrap.min.css">
-
-  <link rel="stylesheet" type="text/css" href="stylesheets/style.css">
-
+  <title>Google Maps with User Location and Radius</title>
+  <style>
+    #map { height: 100vh; width: 100vh; float: left; }
+    #list { height: 100vh; width: 30%; float: left; overflow-y: auto; padding: 10px; box-sizing: border-box; }
+  </style>
 </head>
 <body>
+  <div id="map"></div>
+  <div id="list"></div>
+  <script>
+    function getQueryParams() {
+      const params = new URLSearchParams(window.location.search);
+      return {
+        apiKey: params.get('apiKey'),
+        maxDistance: params.get('maxDistance') || 5 // Default to 5 miles
+      };
+    }
 
-<div class="container-fluid">
-<div class="row">
+    const { apiKey, maxDistance } = getQueryParams();
 
-  <div class="col-md-12">
-    <div class="jumbotron" id="brainstorm_title"><!--jumbotron-->
-      <h1>Brainstorm App</h1> 
-      <p>
-      Use this app to aid your creative writing process. Bennett's 
-      instructions, etc.
-      </p>
-    </div><!--End of "jumbotron-->
-  </div><!--End of "col-md-12"-->
+    function loadScript(src, callback) {
+      const script = document.createElement('script');
+      script.src = src;
+      script.async = true;
+      script.defer = true;
+      script.onload = callback;
+      document.head.appendChild(script);
+    }
 
-</div><!--End of "row"-->
+    function initMap() {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(position => {
+          const userLocation = { lat: position.coords.latitude, lng: position.coords.longitude };
 
-<div class="row">
+          const map = new google.maps.Map(document.getElementById('map'), {
+            center: userLocation,
+            zoom: 12
+          });
 
-  <div class="col-md-4" id-"first_column">
-    <h2 id="new_sentence_entry">Enter a new sentence:</h2>
-    <input type="text" class="form-control" id="new_sentence"/>
-    <button type="button" class="btn btn-primary" id="new_sentence_button" 
-          onclick="add_sentence()">
-    Submit New Sentence
-    </button>
-  </div><!--End of "col-md-4"-->
+          new google.maps.Marker({
+            position: userLocation,
+            map: map,
+            title: 'You are here'
+          });
 
-  <p>
+          map.addListener('idle', () => updateList(map, userLocation));
+          updateList(map, userLocation);
+        }, () => {
+          console.log('Error: The Geolocation service failed.');
+        });
+      } else {
+        console.log('Error: Your browser doesn\'t support geolocation.');
+      }
+    }
 
-  <div class="col-md-4" id="second_column">
-    <h2>Sentence List:</h2>
-    <ul class="list-group" id="sentence_list"></ul>
-  </div><!--End of "col-md-4"-->
+    async function updateList(map, userLocation) {
+      const bounds = map.getBounds();
+      const list = document.getElementById('list');
+      list.innerHTML = '';
 
-  <div class="col-md-4" id="third_column">
-    <h2>Noun List:</h2>
-    <ul class="list-group" id="noun_list"></ul>
-  </div><!--End of "col-md-4"-->
+      const response = await fetch(`/nearby?lat=${userLocation.lat}&lng=${userLocation.lng}&radius=${maxDistance}&type=restaurant`);
+      const data = await response.json();
 
-  </p>
-</div><!--End of "row"-->
-</div><!--End of "container"-->
+      data.results.forEach(place => {
+        const item = document.createElement('div');
+        item.textContent = place.name;
+        list.appendChild(item);
 
+        new google.maps.Marker({
+          position: place.geometry.location,
+          map: map,
+          title: place.name
+        });
+      });
+    }
+
+    window.onload = () => {
+      if (apiKey) {
+        loadScript(`https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places`, initMap);
+      } else {
+        console.error('API key not provided in query parameters.');
+      }
+    };
+  </script>
 </body>
-
 </html>
