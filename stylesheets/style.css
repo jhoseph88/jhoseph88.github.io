@@ -1,0 +1,21 @@
+#brainstorm_title {
+	margin-top: 2%;
+}
+
+#new_sentence {
+	margin-top: 4%;
+	margin-bottom: 3%;
+}
+
+#new_sentence_entry {
+	margin-top: 8.4%;
+}
+
+#noun_item:hover {
+	background-color: lavenderblush;
+	cursor: pointer;
+}
+
+#noun_item:active {
+	background-color: lavender;
+}
