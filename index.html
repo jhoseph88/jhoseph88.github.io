@@ -23,7 +23,7 @@
       };
     }
 
-    const { apiKey, coordinates, maxDistance } = getQueryParams();
+    const { apiKey, coordinates, maxDistance, restaurants } = getQueryParams();
     const [lat, lng] = coordinates.split(',').map(Number);
     const userLocation = { lat, lng };
 
@@ -43,7 +43,7 @@
       });
 
       restaurants.forEach((restaurant) => {
-        const location = { lat: restaurant.lat, lng: restaurant.lng };
+        const [lat, lng] = restaurant.split(',').map(Number);
         bounds.extend(location);
 
         const marker = new google.maps.Marker({
@@ -53,7 +53,7 @@
         });
 
         const infoWindow = new google.maps.InfoWindow({
-          content: `<div><strong>${restaurant.name}</strong><br>Lat: ${restaurant.lat}, Lng: ${restaurant.lng}</div>`
+          content: `<div><strong>${restaurant.name}</strong><br>Lat: ${lat}, Lng: ${lng}</div>`
         });
 
         marker.addListener('click', () => {
@@ -61,7 +61,7 @@
         });
 
         const item = document.createElement('div');
-        item.textContent = `${restaurant.name} - Lat: ${restaurant.lat}, Lng: ${restaurant.lng}`;
+        item.textContent = `${restaurant.name} - Lat: ${lat}, Lng: ${lng}`;
         list.appendChild(item);
       });
     }
