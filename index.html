@@ -45,8 +45,6 @@
       restaurants.forEach((restaurant) => {
         const [lat, lng] = restaurant.split(',').map(Number);
         const location = { lat, lng };
-        bounds.extend(location);
-
         const marker = new google.maps.Marker({
           map: map,
           position: location,
