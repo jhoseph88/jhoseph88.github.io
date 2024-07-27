@@ -67,7 +67,7 @@
         });
 
         const infoWindow = new google.maps.InfoWindow({
-          content: `<div><strong>${restaurant.name}</strong><br>${restaurant.address}</div>`
+          content: `<div><strong>${restaurant.name}</strong><br>${restaurant.address}<br><img src="${restaurant.imgUrl}" alt="${restaurant.name}" style="width:100px;height:auto;"></div>`
         });
 
         marker.addListener('click', () => {
